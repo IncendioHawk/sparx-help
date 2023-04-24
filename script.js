@@ -91,6 +91,26 @@ async function getBookworkCode() {
 
 function getAnswer(bookworkCode) {
   let answer = null
+  if (
+    document.querySelector(
+      ".answer > .answer-part-outer > .answer-part > .gap-container > .gap-slot > div > div > div > div > .text > .katex > .katex-mathml"
+    ) != null
+  ) {
+    const part1 = [
+      ...document.querySelectorAll(
+        ".answer-part > div > span > span > .katex-html"
+      ),
+    ]
+    const values = [
+      ...document.querySelectorAll(
+        ".answer > .answer-part-outer > .answer-part > .gap-container > .gap-slot > div > div > div > div > .text > .katex > .katex-html .base"
+      ),
+    ]
+    answer = values.reduce((a, l, i) => {
+      return `${a} ${part1[i] ? part1[i].outerHTML : ""} ${l.outerHTML}`
+    }, "")
+  }
+
   if (document.querySelector(".answer > .choices") != null) {
     answer = document.querySelector(
       ".answer > .choices > .selected > div > .text > .katex > .katex-mathml > math"
@@ -106,6 +126,27 @@ function getAnswer(bookworkCode) {
       .reduce((a, i) => `${a}, ${i.value}`, "")
       .replace(", ", "")
   }
+
+  if (
+    document.querySelector(
+      ".answer > .answer-part-outer > .answer-part > .gap-container > .keypad-number-input > .number-input"
+    ) != null &&
+    document
+      .querySelector(".answer")
+      .querySelector(".text > .katex > .katex-mathml") != null
+  ) {
+    const div = document.createElement("div")
+    div.innerHTML = ""
+    Array.from(document.querySelectorAll(".gap-card > div > div > span.text"))
+      .filter((i) => i.childElementCount > 0)
+      .forEach((i) => (div.innerHTML += i.outerHTML))
+    div.querySelectorAll(".katex-mathml").forEach((i) => i.remove())
+    div.innerHTML += [
+      ...document.querySelectorAll("input.number-input"),
+    ].reduce((a, i) => `${a}, ${i.value}`, "")
+    answer = div.outerHTML
+  }
+
   if (
     document.querySelector(
       ".answer > .answer-part-outer > .answer-part > .gap-container > .gap-slot"
@@ -136,8 +177,8 @@ function getAnswer(bookworkCode) {
 
   if (
     document.querySelector(
-      ".answer > div > .choice-select-all.text-container > div > span" != null
-    )
+      ".answer > div > .choice-select-all.text-container > div > span"
+    ) != null
   ) {
     answer = [
       ...document.querySelectorAll(
@@ -147,25 +188,7 @@ function getAnswer(bookworkCode) {
       return `${a} ${i.textContent}`
     }, "")
   }
-  if (
-    document.querySelector(
-      ".answer > .answer-part-outer > .answer-part > .gap-container > .gap-slot > div > div > div > div > .text > .katex > .katex-mathml"
-    ) != null
-  ) {
-    const part1 = [
-      ...document.querySelectorAll(
-        ".answer-part > div > span > span > .katex-html"
-      ),
-    ]
-    const values = [
-      ...document.querySelectorAll(
-        ".answer > .answer-part-outer > .answer-part > .gap-container > .gap-slot > div > div > div > div > .text > .katex > .katex-html .base"
-      ),
-    ]
-    answer = values.reduce((a, l, i) => {
-      return `${a} ${part1[i] ? part1[i].outerHTML : ""} ${l.outerHTML}`
-    }, "")
-  }
+
   answer ??= document.querySelector(".answer input").value
   // console.log({ answer })
   const prevAnswers =
