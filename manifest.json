@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
   "name": "Sparx Bookwork Code Helper",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "A tool to make sparx homework quicker to do by saving the bookwork codes for you. Now works with keyboard",
   "content_scripts": [
     {
-      "matches": ["https://marlingschool.sparxmaths.uk/student"],
+      "matches": ["https://marlingschool.sparxmaths.uk/student/*"],
       "js": ["script.js"]
     }
   ]
